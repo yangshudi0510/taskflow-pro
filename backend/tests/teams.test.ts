@@ -9,14 +9,28 @@ let memberToken: string;
 let teamId: string;
 
 beforeAll(async () => {
+  // Clean database before tests
+  await prisma.notification.deleteMany({});
+  await prisma.session.deleteMany({});
+  await prisma.passwordHistory.deleteMany({});
+  await prisma.userSetting.deleteMany({});
+  await prisma.activity.deleteMany({});
+  await prisma.auditLog.deleteMany({});
+  await prisma.invitation.deleteMany({});
+  await prisma.teamMember.deleteMany({});
+  await prisma.team.deleteMany({});
+  await prisma.user.deleteMany({});
+
   app = await buildApp({ logger: false });
   await app.ready();
+
+  const suffix = Date.now();
 
   // Register owner
   const ownerRes = await app.inject({
     method: 'POST',
     url: '/api/v1/auth/register',
-    payload: { email: 'owner@test.com', password: 'Owner1234!', name: 'Owner' },
+    payload: { email: `owner-${suffix}@test.com`, password: 'Owner1234!', name: 'Owner' },
   });
   ownerToken = JSON.parse(ownerRes.payload).accessToken;
 
@@ -24,7 +38,7 @@ beforeAll(async () => {
   const memberRes = await app.inject({
     method: 'POST',
     url: '/api/v1/auth/register',
-    payload: { email: 'member@test.com', password: 'Member1234!', name: 'Member' },
+    payload: { email: `member-${suffix}@test.com`, password: 'Member1234!', name: 'Member' },
   });
   memberToken = JSON.parse(memberRes.payload).accessToken;
 });

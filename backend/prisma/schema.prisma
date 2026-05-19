@@ -449,6 +449,8 @@ model TaskWatcher {
   task_id String
   user_id String
 
+  task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
   @@id([task_id, user_id])
   @@map("task_watchers")
 }
