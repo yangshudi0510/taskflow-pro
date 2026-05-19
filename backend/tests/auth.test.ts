@@ -6,6 +6,18 @@ import { prisma } from '../src/plugins/prisma';
 let app: FastifyInstance;
 
 beforeAll(async () => {
+  // Clean database before tests
+  await prisma.notification.deleteMany({});
+  await prisma.session.deleteMany({});
+  await prisma.passwordHistory.deleteMany({});
+  await prisma.userSetting.deleteMany({});
+  await prisma.activity.deleteMany({});
+  await prisma.auditLog.deleteMany({});
+  await prisma.invitation.deleteMany({});
+  await prisma.teamMember.deleteMany({});
+  await prisma.team.deleteMany({});
+  await prisma.user.deleteMany({});
+
   app = await buildApp({ logger: false });
   await app.ready();
 });
@@ -27,7 +39,7 @@ afterAll(async () => {
 
 describe('Auth Module', () => {
   const testUser = {
-    email: 'test@example.com',
+    email: `auth-test-${Date.now()}@example.com`,
     password: 'Test1234!',
     name: 'Test User',
   };

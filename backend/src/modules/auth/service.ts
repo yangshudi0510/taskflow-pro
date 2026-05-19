@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../plugins/prisma';
 import { redis } from '../../plugins/redis';
@@ -20,7 +21,7 @@ const MAX_SESSIONS = 10;
 
 function generateAccessToken(user: { id: string; email: string; role: string }): string {
   return jwt.sign(
-    { userId: user.id, email: user.email, role: user.role, iat: Math.floor(Date.now() / 1000) },
+    { userId: user.id, email: user.email, role: user.role, jti: crypto.randomBytes(8).toString('hex') },
     JWT_SECRET,
     { expiresIn: '15m' }
   );
@@ -28,7 +29,7 @@ function generateAccessToken(user: { id: string; email: string; role: string }):
 
 function generateRefreshToken(user: { id: string; email: string; role: string }, rememberMe = false): string {
   return jwt.sign(
-    { userId: user.id, email: user.email, role: user.role, type: 'refresh' },
+    { userId: user.id, email: user.email, role: user.role, type: 'refresh', jti: crypto.randomBytes(8).toString('hex') },
     JWT_REFRESH_SECRET,
     { expiresIn: rememberMe ? '30d' : '7d' }
   );

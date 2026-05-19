@@ -54,6 +54,15 @@ export function errorHandler(
     }
   }
 
+  // Fastify validation errors
+  if ('validation' in error && (error as FastifyError).validation) {
+    return reply.status(400).send({
+      error: 'Validation error',
+      statusCode: 400,
+      errors: (error as FastifyError).validation,
+    });
+  }
+
   // Rate limit error
   if ('statusCode' in error && (error as FastifyError).statusCode === 429) {
     return reply.status(429).send({
